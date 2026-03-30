@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import type { AnalysisResponse, AnalysisSummary, ApiKeys } from '../types';
 
-const API_BASE = '/api';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || '';
+const API_BASE = `${BACKEND_URL}/api`;
 
 function getApiHeaders(apiKeys: ApiKeys): Record<string, string> {
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };

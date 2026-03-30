@@ -25,8 +25,19 @@ export function useWebSocket({ sessionId, apiKeys, onStatusUpdate, onComplete, o
   useEffect(() => {
     if (!sessionId) return;
 
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const ws = new WebSocket(`${protocol}//${window.location.host}/ws/analysis/${sessionId}`);
+    const backendUrl = import.meta.env.VITE_BACKEND_URL || '';
+    let wsUrl: string;
+    if (backendUrl) {
+      // Production: connect to backend domain
+      const wsProtocol = backendUrl.startsWith('https') ? 'wss:' : 'ws:';
+      const host = backendUrl.replace(/^https?:\/\//, '');
+      wsUrl = `${wsProtocol}//${host}/ws/analysis/${sessionId}`;
+    } else {
+      // Dev: same host (Vite proxy)
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      wsUrl = `${protocol}//${window.location.host}/ws/analysis/${sessionId}`;
+    }
+    const ws = new WebSocket(wsUrl);
 
     ws.onopen = () => {
       setIsConnected(true);
